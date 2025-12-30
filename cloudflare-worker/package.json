@@ -1,0 +1,30 @@
+{
+  "name": "market-x-ray-worker",
+  "version": "0.1.0",
+  "description": "Cloudflare Worker for Market X-Ray - Max Pain calculation service",
+  "main": "src/worker.js",
+  "scripts": {
+    "dev": "dotenv -- npx wrangler dev",
+    "deploy": "dotenv -- npx wrangler deploy",
+    "deploy:prod": "dotenv -- npx wrangler deploy --env production",
+    "test": "vitest run",
+    "env:setup": "cp .env.example .env && echo '请编辑 .env 文件配置你的凭证'",
+    "configure": "bash configure.sh",
+    "secrets:sync": "dotenv -- npx wrangler secret:bulk .env",
+    "login": "npx wrangler login",
+    "whoami": "npx wrangler whoami"
+  },
+  "dependencies": {
+    "itty-router": "^4.0.23"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241111.0",
+    "dotenv-cli": "^7.4.4",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.5",
+    "wrangler": "^4.56.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

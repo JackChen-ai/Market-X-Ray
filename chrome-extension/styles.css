@@ -1,0 +1,110 @@
+/* Market X-Ray Styles - Dark Theme Enhanced */
+
+.market-x-ray-tooltip {
+  animation: market-x-ray-fade-in 0.2s ease-out;
+}
+
+@keyframes market-x-ray-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Enhanced fade-out animation */
+@keyframes market-x-ray-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+}
+
+.market-x-ray-tooltip.fade-out {
+  animation: market-x-ray-fade-out 0.15s ease-in forwards;
+}
+
+/* Prevent tooltip from interfering with page styles */
+.market-x-ray-tooltip * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+}
+
+/* Add some spacing for better readability on Twitter */
+[data-testid="tweetText"] .r-1qd0xha {
+  position: relative;
+}
+
+/* Ensure tooltip stays on top of other elements */
+.market-x-ray-tooltip {
+  z-index: 2147483647 !important; /* Maximum z-index */
+}
+
+/* Style for tickers that have been processed */
+[data-market-x-ray-processed="true"] {
+  cursor: pointer !important;
+  text-decoration: underline dotted !important;
+  transition: all 0.2s ease;
+}
+
+[data-market-x-ray-processed="true"]:hover {
+  text-decoration: underline !important;
+  text-decoration-color: #FF6B35 !important;
+}
+
+/* Loading state for tickers */
+[data-market-x-ray-loading="true"] {
+  color: #FF6B35 !important;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Enhanced tooltip shadow for dark theme */
+.market-x-ray-tooltip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(255, 107, 53, 0.1);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Custom scrollbar for tooltip content if needed */
+.market-x-ray-tooltip::-webkit-scrollbar {
+  width: 6px;
+}
+
+.market-x-ray-tooltip::-webkit-scrollbar-track {
+  background: #1E2125;
+  border-radius: 3px;
+}
+
+.market-x-ray-tooltip::-webkit-scrollbar-thumb {
+  background: #FF6B35;
+  border-radius: 3px;
+}
+
+.market-x-ray-tooltip::-webkit-scrollbar-thumb:hover {
+  background: #FF8B53;
+}

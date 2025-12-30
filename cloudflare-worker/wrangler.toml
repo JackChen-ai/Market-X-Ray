@@ -1,0 +1,32 @@
+name = "market-x-ray-worker"
+main = "src/worker.js"
+compatibility_date = "2024-12-30"
+
+# 账户配置
+account_id = "ef946fc6ebbb72d3b4214504c394bb3b"
+
+# 默认环境配置
+[vars]
+ENVIRONMENT = "development"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "5eab9ae376984f21a2ff04319c214d3c"
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "5eab9ae376984f21a2ff04319c214d3c"
+
+[env.development]
+vars = { ENVIRONMENT = "development" }
+
+[[env.development.kv_namespaces]]
+binding = "CACHE"
+id = "5eab9ae376984f21a2ff04319c214d3c"
+
+# 环境变量配置（从 .env 文件或系统环境变量读取）
+# 注意：这些变量通过 dotenv-cli 加载，不在 toml 中定义
+# 在代码中使用 env.YAHOO_FINANCE_API 等访问

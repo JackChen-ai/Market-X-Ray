@@ -1,0 +1,37 @@
+#!/bin/bash
+
+echo "=========================================="
+echo "    编辑 .env 文件配置"
+echo "=========================================="
+echo ""
+
+# 显示当前 .env 文件
+echo "当前 .env 文件内容："
+echo "----------------------------------------"
+cat .env
+echo "----------------------------------------"
+echo ""
+
+echo "请使用以下编辑器之一打开并编辑："
+echo ""
+echo "1. 使用 nano（终端编辑器）:"
+echo "   nano .env"
+echo ""
+echo "2. 使用 vim:"
+echo "   vim .env"
+echo ""
+echo "3. 使用 VS Code:"
+echo "   code .env"
+echo ""
+echo "4. 使用其他编辑器直接打开文件"
+echo ""
+echo "需要更新的关键字段："
+echo "----------------------------------------"
+echo "CLOUDFLARE_API_TOKEN=你的真实API令牌"
+echo "CLOUDFLARE_ACCOUNT_ID=你的账户ID"
+echo "ENVIRONMENT=development  # 或 production"
+echo "----------------------------------------"
+echo ""
+echo "编辑完成后保存文件，然后运行："
+echo "npm run dev  # 启动开发服务器"
+echo ""
