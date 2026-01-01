@@ -6,7 +6,7 @@ console.log('Market X-Ray content script loaded')
 // Configuration
 const CONFIG = {
   DEBOUNCE_DELAY: 500, // ms
-  TICKER_REGEX: /\$([A-Z]{1,5})\b/g,
+  TICKER_REGEX: /\$([A-Z]{1,5})\b/g, // 只匹配有$符号的股票代码
   WHITELIST_DOMAINS: ['twitter.com', 'x.com', 'reddit.com'],
   API_BASE_URL: 'https://market-x-ray-worker-production.chenkaijie02.workers.dev/api',
 }
@@ -39,14 +39,21 @@ function debounce(func, delay) {
   }
 }
 
-// Extract tickers from text
+// Extract tickers from text (only $ symbols)
 function extractTickers(text) {
   const tickers = new Set()
   let match
   while ((match = CONFIG.TICKER_REGEX.exec(text)) !== null) {
-    tickers.add(match[1].toUpperCase())
+    const ticker = match[1].toUpperCase()   // 股票代码
+    tickers.add(ticker)
   }
   return Array.from(tickers)
+}
+
+// Helper function to create regex pattern for matching ticker (only $ symbol)
+function createTickerPattern(ticker) {
+  // 只匹配 $AAPL（必须有$符号）
+  return new RegExp(`\\$${ticker}\\b`, 'gi')
 }
 
 // Generate realistic mock data based on stock symbol
@@ -197,6 +204,16 @@ async function fetchMaxPainData(ticker) {
   })
 }
 
+// Create info icon element for click-to-show interaction
+function createInfoIcon(ticker) {
+  const icon = document.createElement('span')
+  icon.className = 'market-x-ray-info-icon'
+  icon.innerHTML = '🔍Quick Max Pain Check'
+  icon.title = `Click to show ${ticker} Max Pain data`
+
+  return icon
+}
+
 // Create tooltip element
 function createTooltip(data) {
   const tooltip = document.createElement('div')
@@ -214,6 +231,9 @@ function createTooltip(data) {
     font-size: 14px;
     color: #EAECEF;
   `
+
+  // Get Discord icon URL
+  const discordIconUrl = chrome.runtime.getURL('icons/Discord.svg')
 
   const { symbol, maxPain, underlyingPrice, analysis, cached } = data
   const priceDiff = underlyingPrice - maxPain
@@ -299,23 +319,27 @@ function createTooltip(data) {
       <div style="font-size: 10px; color: #8B949E; font-style: italic;">
         📊 Data for reference only. Not financial advice.
       </div>
-      <button style="
-        background: linear-gradient(135deg, #2A2D32 0%, #1E2125 100%);
-        color: #D1D5DB;
-        border: 1px solid #3A3D42;
+      <button id="tooltipDiscordButton" style="
+        background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
+        color: #FFFFFF;
+        border: none;
         border-radius: 6px;
-        padding: 8px 16px;
-        font-size: 12px;
+        padding: 6px 12px;
+        font-size: 11px;
         font-weight: 600;
         cursor: pointer;
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 6px;
         transition: all 0.2s ease;
-      " onmouseover="this.style.background='linear-gradient(135deg, #3A3D42 0%, #2A2D32 100%)'; this.style.borderColor='#FFD700'; this.style.color='#FFD700'"
-        onmouseout="this.style.background='linear-gradient(135deg, #2A2D32 0%, #1E2125 100%)'; this.style.borderColor='#3A3D42'; this.style.color='#D1D5DB'">
-        <span style="color: #FFD700;">🔒</span>
-        Real-time GEX <span style="color: #FFD700; font-weight: 700;">(Pro)</span>
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-width: 120px;
+        box-shadow: 0 3px 8px rgba(88, 101, 242, 0.2);
+      " onmouseover="this.style.background='linear-gradient(135deg, #4752C4 0%, #3C45A5 100%)'; this.style.transform='translateY(-1px) scale(1.02)'; this.style.boxShadow='0 4px 10px rgba(88, 101, 242, 0.3)'"
+        onmouseout="this.style.background='linear-gradient(135deg, #5865F2 0%, #4752C4 100%)'; this.style.transform='none'; this.style.boxShadow='0 3px 8px rgba(88, 101, 242, 0.2)'">
+        <img src="${discordIconUrl}" width="12" height="12" alt="Discord" style="filter: brightness(0) invert(1);">
+        Join Discord
       </button>
     </div>
   `
@@ -364,8 +388,19 @@ async function showTooltip(tickerElement, ticker) {
     document.body.appendChild(tooltip)
     positionTooltip(tooltip, tickerElement)
 
+    // Add click event for Discord button in tooltip
+    const discordButton = tooltip.querySelector('#tooltipDiscordButton')
+    if (discordButton) {
+      discordButton.addEventListener('click', (e) => {
+        e.stopPropagation()
+        window.open('https://discord.gg/FHvSUTUuMU', '_blank')
+      })
+    }
+
     // Store reference for cleanup
     tickerElement._marketXRayTooltip = tooltip
+    // Mark that tooltip is showing for this element
+    tickerElement._marketXRayTooltipShowing = true
 
     // Add hover listeners with improved hide logic
     let hideTimeout = null
@@ -378,9 +413,109 @@ async function showTooltip(tickerElement, ticker) {
             tooltip.parentNode.removeChild(tooltip)
           }
           tickerElement._marketXRayTooltip = null
+
+          // Reinsert the button when tooltip is hidden
+          if (tickerElement._marketXRayClickedButton) {
+            const { outerHTML, ticker } = tickerElement._marketXRayClickedButton
+
+            // Find the stock ticker in the element's text
+            const tickerPattern = createTickerPattern(ticker)
+            const currentHTML = tickerElement.innerHTML
+
+            // Insert the button HTML after the ticker
+            const newHTML = currentHTML.replace(tickerPattern, (match) => {
+              return match + outerHTML
+            })
+
+            if (newHTML !== currentHTML) {
+              tickerElement.innerHTML = newHTML
+
+              // Reattach click event listener to the new button
+              const newButton = tickerElement.querySelector('.market-x-ray-info-icon:last-child')
+              if (newButton) {
+                newButton.addEventListener('click', (e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+
+                  // Store reference to the clicked button and its HTML
+                  tickerElement._marketXRayClickedButton = {
+                    element: newButton,
+                    outerHTML: newButton.outerHTML,
+                    ticker: ticker
+                  }
+
+                  // Remove the button completely from DOM
+                  newButton.remove()
+
+                  // If tooltip already exists, hide it first
+                  if (tickerElement._marketXRayTooltip) {
+                    tickerElement._marketXRayTooltip.remove()
+                    tickerElement._marketXRayTooltip = null
+                  }
+
+                  // Show tooltip immediately
+                  showTooltip(tickerElement, ticker)
+                })
+              }
+            }
+
+            tickerElement._marketXRayClickedButton = null
+          }
+          // Clear tooltip showing flag
+          tickerElement._marketXRayTooltipShowing = false
         }, 150) // Match CSS animation duration
       }
       tickerElement._marketXRayTooltip = null
+
+      // Also reinsert the button if tooltip wasn't attached to DOM
+      if (tickerElement._marketXRayClickedButton) {
+        const { outerHTML, ticker } = tickerElement._marketXRayClickedButton
+
+        // Find the stock ticker in the element's text
+        const tickerPattern = createTickerPattern(ticker)
+        const currentHTML = tickerElement.innerHTML
+
+        // Insert the button HTML after the ticker
+        const newHTML = currentHTML.replace(tickerPattern, (match) => {
+          return match + outerHTML
+        })
+
+        if (newHTML !== currentHTML) {
+          tickerElement.innerHTML = newHTML
+
+          // Reattach click event listener to the new button
+          const newButton = tickerElement.querySelector('.market-x-ray-info-icon:last-child')
+          if (newButton) {
+            newButton.addEventListener('click', (e) => {
+              e.stopPropagation()
+              e.preventDefault()
+
+              // Store reference to the clicked button and its HTML
+              tickerElement._marketXRayClickedButton = {
+                element: newButton,
+                outerHTML: newButton.outerHTML,
+                ticker: ticker
+              }
+
+              // Remove the button completely from DOM
+              newButton.remove()
+
+              // If tooltip already exists, hide it first
+              if (tickerElement._marketXRayTooltip) {
+                tickerElement._marketXRayTooltip.remove()
+                tickerElement._marketXRayTooltip = null
+              }
+
+              // Show tooltip immediately
+              showTooltip(tickerElement, ticker)
+            })
+          }
+        }
+
+        tickerElement._marketXRayClickedButton = null
+      }
+      // Clear tooltip showing flag
+      tickerElement._marketXRayTooltipShowing = false
     }
 
     tooltip.addEventListener('mouseenter', () => {
@@ -446,15 +581,41 @@ function scanForTickers() {
 
       // Find the parent element that contains the ticker
       let parent = node.parentElement
+      let skipElement = false
+
+      // Check if this element is inside a tooltip
       while (parent && parent !== document.body) {
-        if (parent.textContent.includes('$')) {
-          // Check if this element has already been processed
-          if (!state.processedElements.has(parent)) {
-            tickerElements.push(parent)
-          }
+        // Skip if element is inside a tooltip
+        if (parent.classList && parent.classList.contains('market-x-ray-tooltip')) {
+          skipElement = true
           break
         }
         parent = parent.parentElement
+      }
+
+      // Reset parent to original
+      parent = node.parentElement
+
+      if (!skipElement) {
+        while (parent && parent !== document.body) {
+          // 检查父元素是否包含股票代码（必须有$符号）
+          const parentText = parent.textContent
+          if (parentText && CONFIG.TICKER_REGEX.test(parentText)) {
+            // Reset regex lastIndex
+            CONFIG.TICKER_REGEX.lastIndex = 0
+
+            // 提取股票代码（必须有$符号）
+            const tickers = extractTickers(parentText)
+            if (tickers.length > 0) {
+              // Check if this element has already been processed
+              if (!state.processedElements.has(parent)) {
+                tickerElements.push(parent)
+              }
+              break
+            }
+          }
+          parent = parent.parentElement
+        }
       }
     }
   }
@@ -468,10 +629,74 @@ function scanForTickers() {
       // Check if listeners already added
       if (element._marketXRayListenersAdded) return
 
+      // Skip if tooltip is currently showing for this element
+      if (element._marketXRayTooltipShowing) return
+
       // Mark as having listeners
       element._marketXRayListenersAdded = true
 
-      // Add hover listener with debouncing
+      // Insert info icon for each ticker in the element
+      const originalHTML = element.innerHTML
+      let newHTML = originalHTML
+      const insertedIcons = []
+
+      // Replace each unique ticker with ticker + info icon
+      const uniqueTickers = [...new Set(tickers)] // Remove duplicates
+      uniqueTickers.forEach(ticker => {
+        const tickerPattern = createTickerPattern(ticker)
+        const infoIcon = createInfoIcon(ticker)
+
+        // Create a temporary div to get the icon's outerHTML
+        const tempDiv = document.createElement('div')
+        tempDiv.appendChild(infoIcon)
+        const iconHTML = tempDiv.innerHTML
+
+        // Replace all occurrences of this ticker
+        newHTML = newHTML.replace(tickerPattern, (match) => {
+          return match + iconHTML
+        })
+
+        // Store the ticker for each icon we'll insert
+        insertedIcons.push(ticker)
+      })
+
+      // Update element HTML if changes were made
+      if (newHTML !== originalHTML) {
+        element.innerHTML = newHTML
+
+        // Add click event listeners to the icons
+        const infoIcons = element.querySelectorAll('.market-x-ray-info-icon')
+        infoIcons.forEach((icon, index) => {
+          if (index < insertedIcons.length) {
+            const ticker = insertedIcons[index]
+            icon.addEventListener('click', (e) => {
+              e.stopPropagation()
+              e.preventDefault()
+
+              // Store reference to the clicked button and its HTML
+              element._marketXRayClickedButton = {
+                element: icon,
+                outerHTML: icon.outerHTML,
+                ticker: ticker
+              }
+
+              // Remove the button completely from DOM
+              icon.remove()
+
+              // If tooltip already exists, hide it first
+              if (element._marketXRayTooltip) {
+                element._marketXRayTooltip.remove()
+                element._marketXRayTooltip = null
+              }
+
+              // Show tooltip immediately
+              showTooltip(element, ticker)
+            })
+          }
+        })
+      }
+
+      // Add hover listener with debouncing (as fallback)
       let hoverTimeout = null
       element.addEventListener('mouseenter', (e) => {
         // Clear any pending hover timeout

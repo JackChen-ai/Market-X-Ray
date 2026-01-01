@@ -28,18 +28,12 @@
       margin-bottom: 20px;
     }
 
-    .logo {
+    .logo-img {
       width: 32px;
       height: 32px;
-      background: linear-gradient(135deg, #1da1f2, #794bc4);
       border-radius: 8px;
       margin-right: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 14px;
+      object-fit: contain;
     }
 
     .title {
@@ -172,6 +166,12 @@
       background: #1a91da;
     }
 
+    #discordButton:hover {
+      background: linear-gradient(135deg, #4752C4 0%, #3C45A5 100%) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+    }
+
     .button-secondary {
       background: #f7f9fa;
       color: #1da1f2;
@@ -204,39 +204,12 @@
       text-decoration: underline;
     }
 
-    .test-section {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid #e1e8ed;
-    }
-
-    .test-input {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #ccd6dd;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-
-    .test-result {
-      font-size: 12px;
-      padding: 8px;
-      background: #f7f9fa;
-      border-radius: 6px;
-      margin-top: 8px;
-      display: none;
-    }
-
-    .test-result.show {
-      display: block;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">MX</div>
+      <img src="icons/icon32.png" alt="Market X-Ray" class="logo-img">
       <div>
         <div class="title">Market X-Ray</div>
         <div class="subtitle">See institutional data on social media</div>
@@ -274,22 +247,15 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">Quick Test</div>
-      <div class="test-section">
-        <input type="text" class="test-input" id="testTicker" placeholder="Enter ticker (e.g., AAPL)" value="AAPL">
-        <button class="button" id="testButton">Test Max Pain Calculation</button>
-        <div class="test-result" id="testResult"></div>
-      </div>
-    </div>
-
-    <button class="button button-secondary" id="settingsButton">Advanced Settings</button>
+    <button class="button" id="discordButton" style="background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%); border: none; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease;">
+      <img src="icons/Discord.svg" width="16" height="16" alt="Discord" style="filter: brightness(0) invert(1);">
+      Join Discord
+    </button>
 
     <div class="footer">
       <div class="footer-text">
         Data for reference only. Not financial advice.<br>
-        <a href="#" class="footer-link" id="privacyLink">Privacy Policy</a> •
-        <a href="#" class="footer-link" id="helpLink">Help & Support</a>
+        <a href="#" class="footer-link" id="privacyLink">Privacy Policy</a>
       </div>
     </div>
   </div>

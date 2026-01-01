@@ -105,25 +105,30 @@
             transform: translateY(0);
         }
         .premium-button {
-            background: linear-gradient(135deg, #2A2D32 0%, #1E2125 100%);
-            color: #D1D5DB;
-            border: 1px solid #3A3D42;
-            border-radius: 6px;
-            padding: 10px 20px;
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 10px;
             transition: all 0.2s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.2);
         }
         .premium-button:hover {
-            background: linear-gradient(135deg, #3A3D42 0%, #2A2D32 100%);
-            border-color: #FFD700;
-            color: #FFD700;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+            background: linear-gradient(135deg, #4752C4 0%, #3C45A5 100%);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 16px rgba(88, 101, 242, 0.3);
+        }
+        .premium-button:active {
+            transform: translateY(0) scale(0.98);
         }
         .design-preview {
             background: #0F1115;
@@ -192,11 +197,11 @@
                 <div class="color-swatch" style="background: #EAECEF;"></div> 文字色
             </div>
             <div class="visual-item">
-                <h3>🔒 稀缺感按钮</h3>
-                <p>深灰按钮 + 金色锁头，营造高级功能的稀缺感。</p>
-                <button class="premium-button">
-                    <span style="color: #FFD700;">🔒</span>
-                    Real-time GEX <span style="color: #FFD700; font-weight: 700;">(Pro)</span>
+                <h3>🤖 Discord社区入口</h3>
+                <p>Discord风格按钮，点击加入我们的交易社区。</p>
+                <button class="premium-button" id="discordButton">
+                    <img src="icons/Discord.svg" width="20" height="20" alt="Discord" style="filter: brightness(0) invert(1);">
+                    Join Discord
                 </button>
             </div>
         </div>
@@ -443,6 +448,14 @@
         // Auto-test on page load
         window.addEventListener('load', () => {
             setTimeout(testHealth, 500);
+
+            // Add Discord button click handler
+            const discordButton = document.getElementById('discordButton');
+            if (discordButton) {
+                discordButton.addEventListener('click', () => {
+                    window.open('https://discord.gg/FHvSUTUuMU', '_blank');
+                });
+            }
         });
     </script>
 </body>

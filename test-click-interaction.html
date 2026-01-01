@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market X-Ray Click Interaction Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 40px 0;
+            padding: 20px;
+            border: 1px solid #e1e8ed;
+            border-radius: 12px;
+            background: #f7f9fa;
+        }
+        .tweet-example {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #ccd6dd;
+            margin: 20px 0;
+        }
+        h1 {
+            color: #14171a;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #1da1f2;
+            margin-top: 30px;
+        }
+        .instructions {
+            background: #e8f5fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #1da1f2;
+        }
+        .expected-result {
+            background: #f0f9f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #17bf63;
+        }
+        .note {
+            color: #657786;
+            font-size: 14px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Market X-Ray Click Interaction Test</h1>
+    <p>This page tests the new click-to-show interaction for stock tickers.</p>
+
+    <div class="instructions">
+        <h2>Test Instructions</h2>
+        <p>When the Market X-Ray extension is loaded on this page, it should:</p>
+        <ol>
+            <li>Detect stock tickers like $AAPL, $TSLA, $GOOGL</li>
+            <li>Insert a small "i" icon next to each ticker</li>
+            <li>Allow clicking the icon to show the Max Pain tooltip</li>
+            <li>Still support hover interaction as a fallback</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Content</h2>
+
+        <div class="tweet-example">
+            <h3>Example Tweet 1</h3>
+            <p>Just bought some $AAPL and $TSLA. Thinking about adding $GOOGL to my portfolio too. What do you think about $META?</p>
+            <p class="note">Expected: Each stock ticker should have a 🔍Quick Max Pain Check button next to it.</p>
+        </div>
+
+        <div class="tweet-example">
+            <h3>Example Tweet 2</h3>
+            <p>$NVDA is on fire! Also watching $AMZN and $MSFT. $NFLX earnings coming up.</p>
+            <p class="note">Expected: Clicking any 🔍Quick Max Pain Check button should immediately show the tooltip.</p>
+        </div>
+
+        <div class="tweet-example">
+            <h3>Example with Multiple Tickers</h3>
+            <p>My portfolio: $AAPL (30%), $TSLA (20%), $GOOGL (15%), $MSFT (25%), $AMZN (10%)</p>
+            <p class="note">Expected: All 5 tickers should have individual 🔍Quick Max Pain Check buttons.</p>
+        </div>
+
+    </div>
+
+    <div class="expected-result">
+        <h2>Expected Behavior</h2>
+        <ul>
+            <li><strong>Button Appearance:</strong> 🔍Quick Max Pain Check (blue text with light blue background), appears next to each $TICKER</li>
+            <li><strong>Hover Effect:</strong> Button becomes brighter with subtle lift effect on hover</li>
+            <li><strong>Click Action:</strong> Clicking button immediately shows tooltip (no delay)</li>
+            <li><strong>Tooltip:</strong> Dark-themed tooltip with Max Pain data appears below the ticker</li>
+            <li><strong>Fallback:</strong> Hovering over the ticker text still works (with 50ms delay)</li>
+            <li><strong>Simple Logic:</strong> Only stock tickers with $ symbol will be recognized ($AAPL ✓, $XYZ ✓, AAPL ✗, XYZ ✗)</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Manual Test Cases</h2>
+        <p>Try these manual tests:</p>
+        <ol>
+            <li>Refresh page - 🔍Quick Max Pain Check buttons should appear next to all $TICKER symbols</li>
+            <li>Hover over a button - should show tooltip with "Click to show [TICKER] Max Pain data"</li>
+            <li>Click a button - should immediately show the full tooltip</li>
+            <li>Hover over ticker text (not button) - should show tooltip after 50ms delay</li>
+            <li>Click outside tooltip - should hide the tooltip</li>
+            <li>Click Discord button in tooltip - should open Discord invite</li>
+            <li><strong>Simple Test 1:</strong> Check that $AAPL shows button (has $ symbol)</li>
+            <li><strong>Simple Test 2:</strong> Check that AAPL (no $) doesn't show button (no $ symbol)</li>
+            <li><strong>Simple Test 3:</strong> Check that $XYZ shows button (has $ symbol, even if not a real stock)</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <p><strong>Note:</strong> This test page simulates Twitter/Reddit content. The actual extension will only work on whitelisted domains (twitter.com, x.com, reddit.com).</p>
+        <p>To test the actual extension, load it in Chrome and visit Twitter or Reddit.</p>
+    </div>
+</body>
+</html>

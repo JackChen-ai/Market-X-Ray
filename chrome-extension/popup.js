@@ -6,12 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggleAutoScan = document.getElementById('toggleAutoScan')
   const statusDot = document.getElementById('statusDot')
   const statusText = document.getElementById('statusText')
-  const testTicker = document.getElementById('testTicker')
-  const testButton = document.getElementById('testButton')
-  const testResult = document.getElementById('testResult')
-  const settingsButton = document.getElementById('settingsButton')
   const privacyLink = document.getElementById('privacyLink')
-  const helpLink = document.getElementById('helpLink')
 
   // Load current state
   chrome.runtime.sendMessage({ type: 'GET_STATE' }, (response) => {
@@ -43,60 +38,20 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   })
 
-  // Test max pain calculation
-  testButton.addEventListener('click', () => {
-    const ticker = testTicker.value.trim().toUpperCase()
-    if (!ticker) {
-      showTestResult('Please enter a ticker symbol', 'error')
-      return
-    }
-
-    testButton.disabled = true
-    testButton.textContent = 'Calculating...'
-    testResult.classList.remove('show')
-
-    chrome.runtime.sendMessage(
-      { type: 'FETCH_MAX_PAIN', ticker },
-      (response) => {
-        testButton.disabled = false
-        testButton.textContent = 'Test Max Pain Calculation'
-
-        if (response && response.success) {
-          const data = response.data
-          showTestResult(`
-            <strong>$${ticker}</strong><br>
-            Current Price: $${data.underlyingPrice?.toFixed(2) || 'N/A'}<br>
-            Max Pain: $${data.maxPain?.toFixed(2) || 'N/A'}<br>
-            Difference: ${data.analysis?.difference ? data.analysis.difference.toFixed(2) : 'N/A'} (${data.analysis?.percentageDiff || 'N/A'}%)<br>
-            <br>
-            <em>${data.analysis?.analysis || 'No analysis available'}</em>
-          `, 'success')
-        } else {
-          showTestResult(
-            `Error: ${response?.error || 'Failed to fetch data'}`,
-            'error'
-          )
-        }
-      }
-    )
-  })
-
-  // Settings button
-  settingsButton.addEventListener('click', () => {
-    chrome.runtime.openOptionsPage()
-  })
 
   // Privacy link
   privacyLink.addEventListener('click', (e) => {
     e.preventDefault()
-    chrome.tabs.create({ url: 'https://github.com/your-username/market-x-ray/wiki/Privacy-Policy' })
+    chrome.tabs.create({ url: chrome.runtime.getURL('privacy-policy.html') })
   })
 
-  // Help link
-  helpLink.addEventListener('click', (e) => {
-    e.preventDefault()
-    chrome.tabs.create({ url: 'https://github.com/your-username/market-x-ray/wiki/Help' })
-  })
+  // Discord button
+  const discordButton = document.getElementById('discordButton')
+  if (discordButton) {
+    discordButton.addEventListener('click', () => {
+      chrome.tabs.create({ url: 'https://discord.gg/FHvSUTUuMU' })
+    })
+  }
 
   // Helper functions
   function updateStatus(enabled) {
@@ -111,17 +66,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function showTestResult(message, type) {
-    testResult.innerHTML = message
-    testResult.className = 'test-result show'
-    testResult.style.background = type === 'error' ? '#fee7e7' : '#e8f5fe'
-    testResult.style.color = type === 'error' ? '#e0245e' : '#1da1f2'
-  }
-
-  // Handle Enter key in test input
-  testTicker.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      testButton.click()
-    }
-  })
 })

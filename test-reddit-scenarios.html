@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Scenarios Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .reddit-post {
+            background: #1a1a1b;
+            border: 1px solid #343536;
+            border-radius: 4px;
+            padding: 16px;
+            margin: 20px 0;
+            color: #d7dadc;
+        }
+        .reddit-comment {
+            background: #272729;
+            border-left: 2px solid #343536;
+            padding: 12px;
+            margin: 12px 0 12px 20px;
+            border-radius: 0 4px 4px 0;
+        }
+        .reddit-title {
+            color: #d7dadc;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .reddit-text {
+            color: #c8cbcd;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .reddit-meta {
+            color: #818384;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #343536;
+            border-radius: 8px;
+            background: #121213;
+        }
+        h1 {
+            color: #d7dadc;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #ff4500;
+            margin-top: 20px;
+        }
+        .note {
+            color: #818384;
+            font-size: 14px;
+            font-style: italic;
+            margin: 10px 0;
+        }
+        .expected {
+            background: #1c2b21;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #46d160;
+        }
+        .ticker {
+            color: #ff4500;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reddit Scenarios Test</h1>
+    <p>Testing how Market X-Ray detects stock tickers on Reddit.</p>
+
+    <div class="test-section">
+        <h2>Scenario 1: Reddit Post Title</h2>
+        <div class="reddit-post">
+            <div class="reddit-title">What's your opinion on $TSLA earnings this quarter?</div>
+            <div class="reddit-meta">Posted by u/investor123 • 2 hours ago</div>
+        </div>
+        <div class="note">Expected: $TSLA should have 🔍Quick Max Pain Check button</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Scenario 2: Reddit Comment with Multiple Tickers</h2>
+        <div class="reddit-comment">
+            <div class="reddit-text">
+                I'm bullish on $AAPL and $MSFT. Also watching $NVDA closely. $AMZN might be a good buy at current levels.
+            </div>
+            <div class="reddit-meta">u/stocktrader • 1 hour ago</div>
+        </div>
+        <div class="note">Expected: All 4 tickers should have individual buttons</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Scenario 3: Reddit Discussion Thread</h2>
+        <div class="reddit-post">
+            <div class="reddit-title">Weekly Stock Discussion Thread</div>
+            <div class="reddit-text">
+                <p>What stocks are you watching this week?</p>
+                <p>My watchlist: $GOOGL, $META, $NFLX, $AMD</p>
+                <p>Also considering $PYPL and $SQ for fintech exposure.</p>
+            </div>
+            <div class="reddit-meta">Posted by u/marketwatcher • 1 day ago</div>
+        </div>
+        <div class="note">Expected: All 6 tickers should have buttons</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Scenario 4: Complex Reddit Structure</h2>
+        <div class="reddit-post">
+            <div class="reddit-title">$SPY Technical Analysis</div>
+            <div class="reddit-text">
+                <div data-testid="comment">
+                    <p>Looking at $QQQ and $DIA as well. $IWM showing strength.</p>
+                    <div class="reddit-comment">
+                        <p>Agreed on $QQQ. Also like $XLK for tech exposure.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="note">Expected: Nested comments should also show buttons</div>
+    </div>
+
+    <div class="expected">
+        <h2>Common Reddit Issues</h2>
+        <p>If buttons are not showing on Reddit, check these:</p>
+        <ol>
+            <li><strong>Page Load Timing:</strong> Reddit loads content dynamically (SPA). Extension might need time to detect new content.</li>
+            <li><strong>DOM Structure:</strong> Reddit uses complex nested divs. Our TreeWalker might not find all text nodes.</li>
+            <li><strong>Content Security:</strong> Reddit might have CSP restrictions that affect extension scripts.</li>
+            <li><strong>Regex Matching:</strong> Ensure $TICKER pattern matches Reddit's text formatting.</li>
+            <li><strong>Extension Enabled:</strong> Check if extension is enabled in popup settings.</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Debugging Steps</h2>
+        <p>To debug Reddit issues:</p>
+        <ol>
+            <li>Open Chrome DevTools (F12) on Reddit</li>
+            <li>Go to Console tab</li>
+            <li>Check for "Market X-Ray content script loaded" message</li>
+            <li>Look for any error messages</li>
+            <li>Type <code>document.querySelectorAll('.market-x-ray-info-icon')</code> to see if buttons exist</li>
+            <li>Check if domain is whitelisted: <code>window.location.hostname</code></li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <p><strong>Note:</strong> This is a simulation. Actual Reddit testing requires:</p>
+        <ol>
+            <li>Load extension in Chrome</li>
+            <li>Visit actual Reddit (reddit.com)</li>
+            <li>Navigate to subreddits like r/stocks, r/investing, r/wallstreetbets</li>
+            <li>Look for posts/comments with $TICKER symbols</li>
+        </ol>
+    </div>
+</body>
+</html>

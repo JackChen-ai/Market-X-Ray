@@ -46,7 +46,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["icons/*"],
+      "resources": ["icons/*", "privacy-policy.html"],
       "matches": ["<all_urls>"]
     }
   ],

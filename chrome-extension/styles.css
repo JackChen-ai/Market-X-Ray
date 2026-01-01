@@ -108,3 +108,63 @@
 .market-x-ray-tooltip::-webkit-scrollbar-thumb:hover {
   background: #FF8B53;
 }
+
+/* Info icon styles for click-to-show interaction */
+.market-x-ray-info-icon {
+  display: inline-block !important;
+  margin-left: 4px !important;
+  font-size: 11px !important;
+  opacity: 0.7 !important;
+  cursor: pointer !important;
+  vertical-align: middle !important;
+  transition: all 0.2s ease !important;
+  user-select: none !important;
+  background: rgba(29, 161, 242, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 2px 8px !important;
+  font-weight: 500 !important;
+  color: #1da1f2 !important;
+  position: relative !important;
+  top: -1px !important;
+  border: 1px solid rgba(29, 161, 242, 0.2) !important;
+  white-space: nowrap !important;
+}
+
+.market-x-ray-info-icon:hover {
+  opacity: 1 !important;
+  background: rgba(29, 161, 242, 0.15) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 6px rgba(29, 161, 242, 0.2) !important;
+  border-color: rgba(29, 161, 242, 0.3) !important;
+}
+
+.market-x-ray-info-icon:active {
+  transform: translateY(0) !important;
+  background: rgba(29, 161, 242, 0.2) !important;
+}
+
+/* Tooltip for info icon */
+.market-x-ray-info-icon::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0F1115;
+  color: #EAECEF;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  border: 1px solid #2A2D32;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 2147483647;
+}
+
+.market-x-ray-info-icon:hover::after {
+  opacity: 1;
+  margin-bottom: 8px;
+}
