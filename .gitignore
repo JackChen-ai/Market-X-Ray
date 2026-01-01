@@ -30,6 +30,7 @@ temp/
 
 # Chrome 扩展构建文件
 chrome-extension/*.zip
+chrome-extension/*.pem
 chrome-extension/build/
 
 # 敏感配置文件

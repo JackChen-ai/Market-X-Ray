@@ -156,15 +156,26 @@ async function fetchMaxPainData(ticker) {
 
           // 转换数据格式以匹配现有的 UI 渲染逻辑
           const result = response.data
+          const priceDiff = result.price - result.maxPain
+          const percentageDiff = Math.abs((priceDiff / result.price) * 100)
+
+          // 根据价格差异动态生成 sentiment
+          let sentiment = 'neutral'
+          if (percentageDiff > 10) {
+            sentiment = priceDiff > 0 ? 'bearish' : 'bullish'
+          } else if (percentageDiff > 5) {
+            sentiment = priceDiff > 0 ? 'slightly bearish' : 'slightly bullish'
+          }
+
           resolve({
             symbol: result.symbol,
             maxPain: result.maxPain,
             underlyingPrice: result.price,
             analysis: {
-              sentiment: 'neutral', // Worker 返回的是 insight 文本，不是 sentiment
+              sentiment: sentiment,
               analysis: result.insight || 'No analysis available',
-              difference: result.price - result.maxPain,
-              percentageDiff: result.percentageDiff || Math.abs(((result.price - result.maxPain) / result.price) * 100).toFixed(1)
+              difference: priceDiff,
+              percentageDiff: result.percentageDiff || percentageDiff.toFixed(1)
             },
             cached: false,
             source: 'data-mule',
